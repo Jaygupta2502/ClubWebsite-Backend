@@ -1,5 +1,4 @@
 const Event = require('../models/Event');
-const bucket = require('../firebase/firebaseConfig');
 const { v4: uuidv4 } = require('uuid');
 const User = require('../models/User');
 
