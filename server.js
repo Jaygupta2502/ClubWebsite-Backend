@@ -41,7 +41,6 @@ app.use('/uploads', express.static('uploads', {
 
 // Routes
 
-app.use(express.json());  // required for login body
 app.use("/api/auth", authRoutes);
 app.use('/api/hod', hodRoutes);
 app.use('/api/events', eventRoutes);
