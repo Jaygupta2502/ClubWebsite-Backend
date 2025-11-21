@@ -725,6 +725,35 @@ router.get('/pending/faculty/:facultyId', async (req, res) => {
 
 
 router.get('/venue/stats', getVenueStats); // 👈 Add this route
+// 📅 Calendar events by month & year
+router.get('/calendar', async (req, res) => {
+  try {
+    let { month, year } = req.query;
+
+    if (!month || !year) {
+      return res.status(400).json({ message: "Month and year are required" });
+    }
+
+    month = parseInt(month);
+    year = parseInt(year);
+
+    // Create date range for the month
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+
+    const events = await Event.find({
+      date: {
+        $gte: startDate.toISOString().slice(0, 10), // YYYY-MM-DD
+        $lt: endDate.toISOString().slice(0, 10)
+      }
+    }).sort({ date: 1 });
+
+    return res.json(events);
+  } catch (err) {
+    console.error("❌ Calendar fetch error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 router.get('/:id', async (req, res) => {
   try {
