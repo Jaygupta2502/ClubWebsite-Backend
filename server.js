@@ -6,6 +6,16 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://clubwebsite-frontend.onrender.com' // if deployed
+  ],
+  credentials: true
+}));
+
 
 // ===== Ensure uploads folder exists =====
 const uploadsPath = path.join(__dirname, 'uploads');
