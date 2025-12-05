@@ -6,16 +6,35 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const cors = require('cors');
+
+// ===== CORS CONFIG (ONLY ONCE) =====
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://clubwebsite-frontend.onrender.com'
+];
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://clubwebsite-frontend.onrender.com' // if deployed
-  ],
+  origin: function(origin, callback) {
+    // allow server-to-server no-origin requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('Not allowed by CORS'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+}));
+
+// Handle preflight
+app.options('*', cors({
+  origin: allowedOrigins,
   credentials: true
 }));
 
+// ===== BODY PARSERS =====
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ===== Ensure uploads folder exists =====
 const uploadsPath = path.join(__dirname, 'uploads');
@@ -23,21 +42,8 @@ if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath);
 }
 
-// ===== MIDDLEWARE (Must be BEFORE routes) =====
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // ===== Static Upload Folder =====
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(
-  '/uploads',
-  express.static('uploads', {
-    setHeaders: (res, path) => {
-      res.set('Access-Control-Allow-Origin', '*'); // CORS fix
-    },
-  })
-);
 
 // ===== ROUTES =====
 const authRoutes = require('./routes/authRoutes');
@@ -47,13 +53,14 @@ const reportRoutes = require('./routes/reportRoutes');
 const clubRoutes = require('./routes/clubRoutes');
 const deanRoutes = require('./routes/deanRoutes');
 
-app.use('/api/auth', authRoutes);
-app.use('/api/hod', hodRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/club', clubRoutes);
-app.use('/api/dean', deanRoutes);
-app.use("/api/recruitments", require("./routes/recruitmentRoutes"));
+// ===== Routes =====
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/hod', require('./routes/hodRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
+app.use('/api/reports', require('./routes/reportRoutes'));
+app.use('/api/club', require('./routes/clubRoutes'));
+app.use('/api/dean', require('./routes/deanRoutes'));
+app.use('/api/recruitments', require('./routes/recruitmentRoutes'));
 
 // ===== DEFAULT ROUTE =====
 app.get('/', (req, res) => {
@@ -63,11 +70,10 @@ app.get('/', (req, res) => {
 // ===== DATABASE + SERVER START =====
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`✅ Server running on port ${PORT}`)
-    );
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
   })
   .catch((err) => console.error('❌ DB connection error:', err));
