@@ -97,16 +97,6 @@ router.put('/user/:id', protect, authorizeRoles('hod'), async (req, res) => {
   }
 });
 
-const {
-  getHodProfile,
-  updateHodProfile,
-  updateHodPassword,
-} = require('../controllers/hodController');
-
-// All routes are protected and HOD-only
-router.get('/profile', protect, authorizeRoles('hod'), getHodProfile);
-router.put('/profile', protect, authorizeRoles('hod'), updateHodProfile);
-router.put('/password', protect, authorizeRoles('hod'), updateHodPassword);
 
 
 module.exports = router;
