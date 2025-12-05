@@ -39,11 +39,17 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ===== ROUTES =====
 const authRoutes = require('./routes/authRoutes');
+console.log('AuthRoutes = ', authRoutes);
+app.use('/api/auth', authRoutes);
 const hodRoutes = require('./routes/hodRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const clubRoutes = require('./routes/clubRoutes');
 const deanRoutes = require('./routes/deanRoutes');
+
+console.log("PATH:", __dirname);
+console.log("AUTH ROUTE EXISTS:", fs.existsSync(path.join(__dirname,"routes/authRoutes.js")));
+console.log("AUTH ROUTE CONTENT:", require('./routes/authRoutes'));
 
 // ===== Routes =====
 app.use('/api/auth', require('./routes/authRoutes'));
