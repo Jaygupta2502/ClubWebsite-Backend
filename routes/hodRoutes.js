@@ -97,5 +97,16 @@ router.put('/user/:id', protect, authorizeRoles('hod'), async (req, res) => {
   }
 });
 
+const auth = require('../middleware/auth');
+const {
+  getHodProfile,
+  updateHodProfile,
+  updateHodPassword,
+} = require('../controllers/hodController');
+
+// All routes are protected and HOD-only
+router.get('/profile', auth, getHodProfile);
+router.put('/profile', auth, updateHodProfile);
+router.put('/password', auth, updateHodPassword);
 
 module.exports = router;
