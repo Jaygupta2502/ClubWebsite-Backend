@@ -55,12 +55,12 @@ const deanRoutes = require('./routes/deanRoutes');
 
 // ===== Routes =====
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/hod', require('./routes/hodRoutes'));
-app.use('/api/events', require('./routes/eventRoutes'));
-app.use('/api/reports', require('./routes/reportRoutes'));
-app.use('/api/club', require('./routes/clubRoutes'));
-app.use('/api/dean', require('./routes/deanRoutes'));
-app.use('/api/recruitments', require('./routes/recruitmentRoutes'));
+//app.use('/api/hod', require('./routes/hodRoutes'));
+//app.use('/api/events', require('./routes/eventRoutes'));
+//app.use('/api/reports', require('./routes/reportRoutes'));
+//app.use('/api/club', require('./routes/clubRoutes'));
+//app.use('/api/dean', require('./routes/deanRoutes'));
+//app.use('/api/recruitments', require('./routes/recruitmentRoutes'));
 
 // ===== DEFAULT ROUTE =====
 app.get('/', (req, res) => {
