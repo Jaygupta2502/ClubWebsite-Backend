@@ -101,7 +101,6 @@ router.put('/user/:id', protect, authorizeRoles('hod'), async (req, res) => {
 // --------------------------------
 // HOD Profile Routes
 // --------------------------------
-const { getHodProfile, updateHodProfile, changeHodPassword } = require('../controllers/hodController');
 
 router.get('/profile', protect, authorizeRoles('hod'), getHodProfile);
 router.put('/profile', protect, authorizeRoles('hod'), updateHodProfile);
