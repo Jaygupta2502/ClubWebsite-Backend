@@ -4,6 +4,7 @@ const { createClubUser, createFacultyUser } = require('../controllers/hodControl
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 const User = require('../models/User'); // Add at top if not already
 const Event = require('../models/Event'); // If you store events in separate model
+const { getHodProfile, updateHodProfile, changeHodPassword } = require('../controllers/hodController');
 
 router.post('/create-club-user', protect, authorizeRoles('hod'), createClubUser);
 router.post('/create-faculty-user', protect, authorizeRoles('hod'), createFacultyUser);
@@ -97,6 +98,14 @@ router.put('/user/:id', protect, authorizeRoles('hod'), async (req, res) => {
   }
 });
 
+// --------------------------------
+// HOD Profile Routes
+// --------------------------------
+const { getHodProfile, updateHodProfile, changeHodPassword } = require('../controllers/hodController');
+
+router.get('/profile', protect, authorizeRoles('hod'), getHodProfile);
+router.put('/profile', protect, authorizeRoles('hod'), updateHodProfile);
+router.put('/password', protect, authorizeRoles('hod'), changeHodPassword);
 
 
 module.exports = router;

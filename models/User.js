@@ -21,6 +21,15 @@ hodName: String, // Add this line
   type: Boolean,
   default: false
 },
+phone: String,
+office: String,
+designation: String,
+qualification: String,
+facultyCount: Number,
+studentCount: Number,
+clubsInDept: Number,
+departmentBudget: String,
+theme: String,
   clubAssigned: {
     type: String,
     required: false  // or true if every faculty must be assigned

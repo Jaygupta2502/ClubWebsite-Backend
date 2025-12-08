@@ -63,3 +63,60 @@ exports.createFacultyUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// =============================
+// HOD Profile Functions
+// =============================
+
+// GET Profile
+exports.getHodProfile = async (req, res) => {
+  try {
+    const hod = await User.findById(req.user.id).select('-password');
+
+    if (!hod || hod.role !== 'hod') {
+      return res.status(404).json({ message: 'HOD not found' });
+    }
+
+    res.json(hod);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// UPDATE Profile
+exports.updateHodProfile = async (req, res) => {
+  try {
+    const updates = req.body;
+
+    const hod = await User.findByIdAndUpdate(
+      req.user.id,
+      updates,
+      { new: true }
+    ).select('-password');
+
+    res.json(hod);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// CHANGE PASSWORD
+exports.changeHodPassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const hod = await User.findById(req.user.id);
+
+    const validPassword = await bcrypt.compare(currentPassword, hod.password);
+    if (!validPassword) {
+      return res.status(400).json({ message: 'Incorrect current password' });
+    }
+
+    hod.password = await bcrypt.hash(newPassword, 10);
+    await hod.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
