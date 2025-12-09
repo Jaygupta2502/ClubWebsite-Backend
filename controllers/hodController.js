@@ -1,6 +1,5 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const Club = require("../models/Club");
 const Event = require("../models/Event");
 
 exports.createClubUser = async (req, res) => {
