@@ -4,7 +4,10 @@ const {
   createHod,
   getAllHods,
   updateHod,
-  deleteHod
+  deleteHod,
+  getDeanProfile,
+  updateDeanProfile,
+  changeDeanPassword,
 } = require('../controllers/deanController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
@@ -14,4 +17,9 @@ router.get('/hods', protect, authorizeRoles('dean'), getAllHods);
 router.put('/hod/:id', protect, authorizeRoles('dean'), updateHod);
 router.delete('/hod/:id', protect, authorizeRoles('dean'), deleteHod);
 
+router.get("/profile", protect, authorizeRoles("dean"), getDeanProfile);
+router.put("/profile", protect, authorizeRoles("dean"), updateDeanProfile);
+router.put("/password", protect, authorizeRoles("dean"), changeDeanPassword);
+
 module.exports = router;
+
