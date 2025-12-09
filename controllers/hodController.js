@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const Event = require("../models/Event");
 
+
 exports.createClubUser = async (req, res) => {
   const { name, email, password, clubName, } = req.body;
   const department = req.user.department;
@@ -73,35 +74,53 @@ exports.createFacultyUser = async (req, res) => {
 /**
  * GET HOD Profile + Dynamic Department Stats
  */
+
+
+/**
+ * GET HOD Profile + Dynamic Stats
+ */
 exports.getHodProfile = async (req, res) => {
   try {
+    // Get HOD user (minus password)
     const hod = await User.findById(req.user.id).select("-password");
 
     if (!hod || hod.role !== "hod") {
       return res.status(404).json({ message: "HOD not found" });
     }
 
-    // Count faculty in department
+    // SAFETY: if department is missing, send basic profile
+    if (!hod.department) {
+      return res.json({
+        ...hod.toObject(),
+        facultyCount: 0,
+        clubsInDept: 0,
+        approvedEvents: 0,
+        pendingEvents: 0
+      });
+    }
+
+    // Count faculty in same department
     const facultyCount = await User.countDocuments({
       department: hod.department,
       role: "faculty",
     });
 
-    // Count clubs in department
-    const clubsInDept = await Club.countDocuments({
+    // Count clubs = count of club presidents (because no Club model)
+    const clubsInDept = await User.countDocuments({
       department: hod.department,
+      role: "club_president",
     });
 
-    // Count approved events in department
+    // Count approved events for department
     const approvedEvents = await Event.countDocuments({
       department: hod.department,
-      status: "fully_approved",
+      status: "final_approved" // correct status from your model
     });
 
-    // Count pending events for HOD review
+    // Count pending events waiting for HOD approval
     const pendingEvents = await Event.countDocuments({
       department: hod.department,
-      status: "hod_pending",
+      status: "faculty_approved"
     });
 
     return res.json({
@@ -109,17 +128,18 @@ exports.getHodProfile = async (req, res) => {
       facultyCount,
       clubsInDept,
       approvedEvents,
-      pendingEvents,
+      pendingEvents
     });
 
   } catch (error) {
+    console.error("HOD PROFILE ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 
 /**
- * UPDATE HOD Profile (Allowed fields only)
+ * UPDATE HOD Profile
  */
 exports.updateHodProfile = async (req, res) => {
   try {
@@ -141,41 +161,45 @@ exports.updateHodProfile = async (req, res) => {
       }
     });
 
-    const updatedHod = await User.findByIdAndUpdate(
+    const updated = await User.findByIdAndUpdate(
       req.user.id,
       updates,
       { new: true }
     ).select("-password");
 
-    return res.json(updatedHod);
+    res.json(updated);
+
   } catch (error) {
+    console.error("HOD UPDATE ERROR:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 
 /**
- * CHANGE Password (same as faculty logic)
+ * CHANGE PASSWORD
  */
 exports.changeHodPassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-
     const hod = await User.findById(req.user.id);
+
     if (!hod) {
       return res.status(404).json({ message: "HOD not found" });
     }
 
-    const validPassword = await bcrypt.compare(currentPassword, hod.password);
-    if (!validPassword) {
+    const valid = await bcrypt.compare(currentPassword, hod.password);
+    if (!valid) {
       return res.status(400).json({ message: "Incorrect current password" });
     }
 
     hod.password = await bcrypt.hash(newPassword, 10);
     await hod.save();
 
-    return res.json({ message: "Password updated successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.json({ message: "Password updated successfully" });
+
+  } catch (error) {
+    console.error("HOD PASSWORD ERROR:", error);
+    res.status(500).json({ error: error.message });
   }
 };
