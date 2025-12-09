@@ -4,14 +4,14 @@ const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 const {
   getFacultyProfile,
   updateFacultyProfile,
-  changeFacultyPassword
+  changeFacultyPassword,
 } = require("../controllers/facultyController");
 
 // Profile
 router.get("/profile", protect, authorizeRoles("faculty"), getFacultyProfile);
 router.put("/profile", protect, authorizeRoles("faculty"), updateFacultyProfile);
 
-// Change password
+// Password
 router.put("/password", protect, authorizeRoles("faculty"), changeFacultyPassword);
 
 module.exports = router;

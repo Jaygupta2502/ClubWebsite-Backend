@@ -1,51 +1,53 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String,
-  role: { type: String, enum: ['club_president', 'faculty', 'venue_coordinator', 'hod', 'dean', 'director'] },
-  clubName: String,       // for club_president
-  department: String,     // for faculty
+  // Basic Information
+  name: { type: String, required: true },
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+
+  // Role Based Access
+  role: {
+    type: String,
+    enum: ['club_president', 'faculty', 'venue_coordinator', 'hod', 'dean', 'director'],
+    required: true
+  },
+
+  // Shared Between Faculty, HOD & Dean
+  department: String,
+  designation: String,
+  phone: String,
+  office: String,
+  theme: { type: String, default: 'light' },
+
+  // Faculty Academic Fields
+  specialization: String,
+  experience: Number,
+  qualification: String,
+  researchPapers: Number,
+
+  // Dean / HOD Department Stats (Editable by Dean, Auto Read by HOD)
+  facultyCount: Number,
+  studentCount: Number,
+  clubsInDept: Number,
+  departmentBudget: String,
+
+  // Club President Data
+  clubName: String,
   clubLogo: String,
   clubPhoto: String,
-establishedYear: Number,
-memberCount: Number,
-totalEvents: Number,
-achievements: [String],
-description: String,
-hodName: String, // Add this line
-  specialization: String, // for faculty
-  experience: String,      // for faculty
-  isDeleted: {
-  type: Boolean,
-  default: false
-},
-phone: String,
-office: String,
-designation: String,
-qualification: String,
-facultyCount: Number,
-studentCount: Number,
-clubsInDept: Number,
-departmentBudget: String,
-theme: String,
-designation: String,
-specialization: String,
-experience: String,
-phone: String,
-office: String,
-qualification: String,
-clubsSupervised: String,
-eventsApproved: String,
-researchPapers: String,
-  clubAssigned: {
-    type: String,
-    required: false  // or true if every faculty must be assigned
-  },
-  // models/User.js (add these fields)
-signatureUrl: { type: String },    // path to stored image e.g. /uploads/signatures/<id>.png
-signatureName: { type: String },   // optional
-});
+  establishedYear: Number,
+  memberCount: Number,
+  achievements: [String],
+  description: String,
+  hodName: String,
+
+  // Signature
+  signatureUrl: String,
+  signatureName: String,
+
+  // Soft Delete
+  isDeleted: { type: Boolean, default: false }
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
