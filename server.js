@@ -45,6 +45,7 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/club', clubRoutes);
 app.use('/api/dean', deanRoutes);
 app.use("/api/recruitments", require("./routes/recruitmentRoutes"));
+app.use("/api/faculty", require("./routes/facultyRoutes"));
 
 // ===== DEFAULT ROUTE =====
 app.get('/', (req, res) => {
