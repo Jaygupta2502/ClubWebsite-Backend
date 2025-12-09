@@ -1,39 +1,36 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Event = require("../models/Event");
-const Club = require("../models/Club");
 
 /**
  * GET Faculty Profile
- * Includes auto stats for approved events + clubs supervised
  */
 exports.getFacultyProfile = async (req, res) => {
   try {
-    // Get faculty data
     const faculty = await User.findById(req.user.id).select("-password");
 
     if (!faculty || faculty.role !== "faculty") {
       return res.status(404).json({ message: "Faculty not found" });
     }
 
-    // Count approved events
+    // Count events approved by this faculty
     const eventsApproved = await Event.countDocuments({
-      facultyId: req.user.id,
-      status: "fully_approved",
+      approvedByFaculty: true
     });
 
-    // Count clubs supervised
-    const clubsSupervised = await Club.countDocuments({
-      facultyCoordinator: req.user.id,
+    // Count clubs supervised: all clubs in faculty's department
+    const clubsSupervised = await User.countDocuments({
+      role: "club_president",
+      department: faculty.department
     });
 
     return res.json({
       ...faculty.toObject(),
       eventsApproved,
-      clubsSupervised,
+      clubsSupervised
     });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -50,7 +47,7 @@ exports.updateFacultyProfile = async (req, res) => {
       "researchPapers",
       "phone",
       "office",
-      "theme",
+      "theme"
     ];
 
     const updates = {};
@@ -60,42 +57,40 @@ exports.updateFacultyProfile = async (req, res) => {
       }
     });
 
-    const updatedFaculty = await User.findByIdAndUpdate(
+    const updated = await User.findByIdAndUpdate(
       req.user.id,
       updates,
       { new: true }
     ).select("-password");
 
-    return res.json(updatedFaculty);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
 /**
- * CHANGE Password
+ * CHANGE PASSWORD
  */
 exports.changeFacultyPassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-
     const faculty = await User.findById(req.user.id);
 
     if (!faculty) {
       return res.status(404).json({ message: "Faculty not found" });
     }
 
-    const validPassword = await bcrypt.compare(currentPassword, faculty.password);
-    if (!validPassword) {
+    const valid = await bcrypt.compare(currentPassword, faculty.password);
+    if (!valid) {
       return res.status(400).json({ message: "Incorrect current password" });
     }
 
-    const hashed = await bcrypt.hash(newPassword, 10);
-    faculty.password = hashed;
+    faculty.password = await bcrypt.hash(newPassword, 10);
     await faculty.save();
 
-    return res.json({ message: "Password updated successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
