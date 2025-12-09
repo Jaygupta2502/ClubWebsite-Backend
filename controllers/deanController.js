@@ -72,15 +72,32 @@ exports.deleteHod = async (req, res) => {
  */
 exports.getDeanProfile = async (req, res) => {
   try {
-    const dean = await User.findById(req.user.id).select("-password");
+    console.log("🔍 DEAN PROFILE REQUEST RECEIVED");
+    console.log("🔐 req.user = ", req.user);
 
-    if (!dean || dean.role !== "dean") {
+    if (!req.user || !req.user.id) {
+      console.log("❌ req.user or req.user.id is missing");
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const dean = await User.findById(req.user.id || req.user._id).select("-password");
+    console.log("📄 dean document => ", dean);
+
+    if (!dean) {
+      console.log("❌ No dean found for id:", req.user.id);
       return res.status(404).json({ message: "Dean not found" });
     }
 
-    return res.json(dean.toObject());
+    if (dean.role !== "dean") {
+      console.log("❌ User is not dean. Role:", dean.role);
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    console.log("✅ DEAN PROFILE SUCCESS");
+    return res.json(dean);
+
   } catch (error) {
-    console.error("Dean GET error:", error);
+    console.log("💥 Dean GET error:", error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -110,10 +127,10 @@ exports.updateDeanProfile = async (req, res) => {
     });
 
     const updated = await User.findByIdAndUpdate(
-      req.user.id,
-      updates,
-      { new: true }
-    ).select("-password");
+  req.user.id || req.user._id,
+  updates,
+  { new: true }
+).select("-password");
 
     return res.json(updated);
   } catch (error) {
@@ -128,7 +145,7 @@ exports.updateDeanProfile = async (req, res) => {
 exports.changeDeanPassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const dean = await User.findById(req.user.id);
+    const dean = await User.findById(req.user.id || req.user._id);
 
     if (!dean) {
       return res.status(404).json({ message: "Dean not found" });
