@@ -37,6 +37,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const clubRoutes = require('./routes/clubRoutes');
 const deanRoutes = require('./routes/deanRoutes');
+const analyticsRoutes = require("./routes/analyticsRoutes");
 
 app.use('/api/auth', authRoutes);
 app.use('/api/hod', hodRoutes);
@@ -46,6 +47,7 @@ app.use('/api/club', clubRoutes);
 app.use('/api/dean', deanRoutes);
 app.use("/api/recruitments", require("./routes/recruitmentRoutes"));
 app.use("/api/faculty", require("./routes/facultyRoutes"));
+app.use("/api/analytics", analyticsRoutes);
 
 // ===== DEFAULT ROUTE =====
 app.get('/', (req, res) => {
