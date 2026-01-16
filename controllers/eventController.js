@@ -178,11 +178,41 @@ const approveEventByVenue = async (req, res) => {
   }
 };
 
+// ✅ Get FINAL APPROVED upcoming events for HOD
+const getFinalApprovedEventsForHOD = async (req, res) => {
+  try {
+    const { department } = req.user;
+
+    // 1. Get clubs under this HOD
+    const clubs = await User.find({
+      role: 'club_president',
+      department
+    }).select('clubName');
+
+    const clubNames = clubs.map(c => c.clubName);
+
+    // 2. Fetch ONLY final approved future events
+    const events = await Event.find({
+      club: { $in: clubNames },
+      status: 'final_approved',
+      approvedByVenue: true,
+      date: { $gte: new Date() }
+    }).sort({ date: 1 });
+
+    res.json(events);
+  } catch (err) {
+    console.error('❌ HOD upcoming events error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 
 
 module.exports = {
   createEvent,
   getVenueStats,
+  getFinalApprovedEventsForHOD,
   approveEventByFaculty,
   approveEventByHod,
   getEventsByHodDepartment,

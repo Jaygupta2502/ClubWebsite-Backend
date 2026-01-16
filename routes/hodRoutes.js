@@ -67,6 +67,8 @@ const activeFaculty = await User.find({
 });
 
 
+
+
 router.get('/inactive-users', protect, authorizeRoles('hod'), async (req, res) => {
   try {
     const inactiveClubs = await User.find({ role: 'club_president', department: req.user.department, isDeleted: true });

@@ -21,6 +21,7 @@ const {
   approveEventByHod,
   rejectEventByHOD,
   approveEventByFaculty,
+  getFinalApprovedEventsForHOD,
   approveEventByVenue
 } = require('../controllers/eventController');
 
@@ -254,6 +255,34 @@ router.get(
 
 // route: pending/hod (kept)
 router.get('/pending/hod', protect, authorizeRoles('hod'), getPendingEventsForHOD);
+
+router.get(
+  '/hod/upcoming-events',
+  protect,
+  authorizeRoles('hod'),
+  getFinalApprovedEventsForHOD
+);
+
+router.delete(
+  '/hod/delete/:id',
+  protect,
+  authorizeRoles('hod'),
+  async (req, res) => {
+    try {
+      const event = await Event.findById(req.params.id);
+      if (!event) {
+        return res.status(404).json({ message: 'Event not found' });
+      }
+
+      await Event.findByIdAndDelete(req.params.id);
+
+      res.json({ message: 'Event permanently deleted' });
+    } catch (err) {
+      console.error('❌ Delete event error:', err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+);
 
 // reject route (kept)
 router.patch('/reject/:id', async (req, res) => {
