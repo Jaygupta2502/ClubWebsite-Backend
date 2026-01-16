@@ -203,3 +203,61 @@ exports.changeHodPassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getHodAnalytics = async (req, res) => {
+  try {
+    const department = req.user.department;
+
+    // 1️⃣ Get clubs under this HOD
+    const clubs = await User.find({
+      role: "club_president",
+      department
+    }).select("clubName");
+
+    const clubNames = clubs.map(c => c.clubName);
+
+    // 2️⃣ Events by Club (Bar chart)
+    const eventsByClub = await Event.aggregate([
+      { $match: { club: { $in: clubNames } } },
+      {
+        $group: {
+          _id: "$club",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 3️⃣ Participation Trend (Line chart – month wise)
+    const participationTrend = await Event.aggregate([
+      { $match: { club: { $in: clubNames } } },
+      {
+        $group: {
+          _id: { $substr: ["$date", 0, 7] }, // YYYY-MM
+          participants: { $sum: "$report.participants" }
+        }
+      },
+      { $sort: { "_id": 1 } }
+    ]);
+
+    // 4️⃣ Venue Utilization (Doughnut chart)
+    const venueUtilization = await Event.aggregate([
+      { $match: { club: { $in: clubNames } } },
+      {
+        $group: {
+          _id: "$venue",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.json({
+      eventsByClub,
+      participationTrend,
+      venueUtilization
+    });
+
+  } catch (err) {
+    console.error("❌ HOD analytics error:", err);
+    res.status(500).json({ message: "Failed to load HOD analytics" });
+  }
+};
