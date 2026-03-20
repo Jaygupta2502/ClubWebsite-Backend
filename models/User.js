@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   // Shared Between Faculty, HOD & Dean
   department: String,
   designation: String,
+  clubAssigned: String,
   phone: String,
   office: String,
   theme: { type: String, default: 'light' },

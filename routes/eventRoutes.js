@@ -673,20 +673,24 @@ router.get('/pending', verifyToken, async (req, res) => {
 });
 
 // get pending events for a faculty id (kept)
+// GET pending events for a specific faculty based on their assigned club name
 router.get('/pending/:facultyId', async (req, res) => {
   try {
     const faculty = await User.findById(req.params.facultyId);
-    if (!faculty) return res.status(404).json({ message: 'Faculty not found' });
+    if (!faculty) {
+      return res.status(404).json({ message: 'Faculty not found' });
+    }
 
+    // IMPORTANT: We filter events where the 'club' string matches faculty's 'clubAssigned' string
     const events = await Event.find({
-      club: faculty.clubAssigned,
+      club: faculty.clubAssigned, 
       status: 'pending',
       approvedByFaculty: false
     }).sort({ date: -1 });
 
     res.json(events);
   } catch (err) {
-    console.error('Error fetching faculty events:', err);
+    console.error('❌ Error fetching faculty events:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });

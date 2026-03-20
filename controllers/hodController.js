@@ -32,7 +32,7 @@ const hodName = req.user.name;
 
 
 exports.createFacultyUser = async (req, res) => {
-  const { name, email, password, specialization, experience } = req.body;
+  const { name, email, password, specialization, experience,clubAssigned } = req.body;
   const department = req.user.department;
 
   console.log("📥 Faculty creation request body:", req.body); // 🔍 Log received body
@@ -53,6 +53,7 @@ exports.createFacultyUser = async (req, res) => {
       department,
       specialization,
       experience,
+      clubAssigned,
     });
 
     await newUser.save();
