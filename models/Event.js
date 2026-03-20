@@ -18,6 +18,10 @@ const eventSchema = new mongoose.Schema({
   additionalDetails: String,
   bannerImageUrl: String,
   clubLogoUrl: String,
+  feedbackLink: { // 👈 Add this new field
+    type: String,
+    default: ''
+  },
   status: {
   type: String,
   enum: ['pending', 'faculty_approved', 'hod_approved', 'final_approved', 'rejected'],

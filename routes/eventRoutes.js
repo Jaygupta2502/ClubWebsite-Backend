@@ -97,6 +97,7 @@ router.post(
         registrationLink,
         attendees,
         schedule,
+        feedbackLink,
         targetAudience
       } = req.body;
 
@@ -176,6 +177,7 @@ router.post(
         clubLogoUrl,
         status: 'pending',
         registrationLink,
+        feedbackLink,
         attendees: normalizedAttendees,
         targetAudience: parsedTargetAudience,
         schedule: parsedSchedule
