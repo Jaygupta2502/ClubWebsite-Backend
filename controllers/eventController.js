@@ -227,7 +227,19 @@ const registerForEvent = async (req, res) => {
   }
 };
 
+const getEventRegistrations = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const registrations = await EventRegistration.find({ eventId: id });
+
+    res.json(registrations);
+
+  } catch (error) {
+    console.error("Fetch registrations error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 module.exports = {
@@ -240,5 +252,6 @@ module.exports = {
   approveEventByVenue,
   getPendingEventsForHOD, // alias it here
   rejectEventByHOD,
-  registerForEvent
+  registerForEvent,
+  getEventRegistrations,
 };

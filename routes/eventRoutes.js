@@ -23,7 +23,8 @@ const {
   approveEventByFaculty,
   getFinalApprovedEventsForHOD,
   approveEventByVenue,
-  registerForEvent
+  registerForEvent,
+  getEventRegistrations,
 } = require('../controllers/eventController');
 
 const sendMail = require('../utils/mailer');
@@ -786,6 +787,7 @@ router.get('/calendar', async (req, res) => {
 
 // 🔥 REGISTER FOR EVENT (ADD THIS HERE)
 router.post('/:id/register', registerForEvent);
+router.get('/:id/registrations', getEventRegistrations);
 
 // get single event by id (kept)
 router.get('/:id', async (req, res) => {
