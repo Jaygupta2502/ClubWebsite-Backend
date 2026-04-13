@@ -53,6 +53,18 @@ currentApprovalLevel: {
     staffCoordinator: String,
     staffInvited: String
   },
+  registrationForm: [
+  {
+    label: { type: String, required: true },
+    type: {
+      type: String,
+      enum: ['text', 'email', 'number', 'dropdown', 'checkbox'],
+      required: true
+    },
+    required: { type: Boolean, default: false },
+    options: [String] // for dropdown
+  }
+],
   registrationLink: String,
   attendees: {
     type: Number,

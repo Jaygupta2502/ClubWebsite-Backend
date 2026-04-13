@@ -95,6 +95,7 @@ router.post(
         ticketQuantity,
         additionalDetails,
         registrationLink,
+        registrationForm,
         attendees,
         schedule,
         feedbackLink,
@@ -151,6 +152,7 @@ router.post(
       // parse schedule and targetAudience safely (frontend should send JSON strings)
       const parsedSchedule = safeJSON(schedule, []);
       const parsedTargetAudience = safeJSON(targetAudience, []);
+      const parsedRegistrationForm = safeJSON(registrationForm, []);
 
       // Normalize numeric values
       const normalizedAttendees = attendees ? Number(attendees) : 0;
@@ -177,6 +179,7 @@ router.post(
         clubLogoUrl,
         status: 'pending',
         registrationLink,
+        registrationForm: parsedRegistrationForm,
         feedbackLink,
         attendees: normalizedAttendees,
         targetAudience: parsedTargetAudience,
