@@ -1,6 +1,7 @@
 const Event = require('../models/Event');
 const { v4: uuidv4 } = require('uuid');
 const User = require('../models/User');
+const EventRegistration = require('../models/EventRegistration');
 
 // ✅ 1. Create Event
 const createEvent = async (req, res) => {
@@ -206,6 +207,26 @@ const getFinalApprovedEventsForHOD = async (req, res) => {
   }
 };
 
+const registerForEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { responses } = req.body;
+
+    const newRegistration = new EventRegistration({
+      eventId: id,
+      responses
+    });
+
+    await newRegistration.save();
+
+    res.status(201).json({ message: "Registered successfully" });
+
+  } catch (error) {
+    console.error("Registration error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 
 
@@ -218,5 +239,6 @@ module.exports = {
   getEventsByHodDepartment,
   approveEventByVenue,
   getPendingEventsForHOD, // alias it here
-  rejectEventByHOD
+  rejectEventByHOD,
+  registerForEvent
 };

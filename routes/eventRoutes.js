@@ -22,7 +22,8 @@ const {
   rejectEventByHOD,
   approveEventByFaculty,
   getFinalApprovedEventsForHOD,
-  approveEventByVenue
+  approveEventByVenue,
+  registerForEvent
 } = require('../controllers/eventController');
 
 const sendMail = require('../utils/mailer');
@@ -782,6 +783,9 @@ router.get('/calendar', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// 🔥 REGISTER FOR EVENT (ADD THIS HERE)
+router.post('/:id/register', registerForEvent);
 
 // get single event by id (kept)
 router.get('/:id', async (req, res) => {
