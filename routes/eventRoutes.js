@@ -253,12 +253,6 @@ router.get('/faculty-pending', async (req, res) => {
 });
 
 // HOD upcoming events route (kept)
-router.get(
-  '/hod/upcoming-events',
-  protect,
-  authorizeRoles('hod'),
-  getEventsByHodDepartment
-);
 
 // route: pending/hod (kept)
 router.get('/pending/hod', protect, authorizeRoles('hod'), getPendingEventsForHOD);
