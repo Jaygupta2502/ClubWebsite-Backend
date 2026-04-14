@@ -21,19 +21,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // ===== Static Upload Folder =====
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(
-  '/uploads',
-  express.static('uploads', {
-    setHeaders: (res, path) => {
-      res.set('Access-Control-Allow-Origin', '*'); // CORS fix
-    },
-  })
-);
 
 // ===== ROUTES =====
 const authRoutes = require('./routes/authRoutes');
 const hodRoutes = require('./routes/hodRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const venueRoutes = require('./routes/venueRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const clubRoutes = require('./routes/clubRoutes');
 const deanRoutes = require('./routes/deanRoutes');
@@ -42,6 +35,7 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 app.use('/api/auth', authRoutes);
 app.use('/api/hod', hodRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/venues', venueRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/club', clubRoutes);
 app.use('/api/dean', deanRoutes);
