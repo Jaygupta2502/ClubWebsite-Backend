@@ -193,12 +193,12 @@ const getFinalApprovedEventsForHOD = async (req, res) => {
     const clubNames = clubs.map(c => c.clubName);
 
     // 2. Fetch ONLY final approved future events
-    const events = await Event.find({
-      club: { $in: clubNames },
-      status: 'final_approved',
-      approvedByVenue: true,
-      date: { $gte: new Date() }
-    }).sort({ date: 1 });
+   // REMOVE DATE FILTER TEMPORARILY
+const events = await Event.find({
+  club: { $in: clubNames },
+  status: 'final_approved',
+  approvedByVenue: true
+}).sort({ date: 1 });
 
     res.json(events);
   } catch (err) {
